@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOS меблі</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Стилі для випадаючого меню на малих екранах */
+        .mobile-menu {
+            display: none; /* Спочатку ховаємо випадаюче меню */
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .mobile-nav {
+            display: none;
+            opacity: 0; /* Додаємо нульову прозорість */
+            transition: opacity 0.3s ease, transform 0.3s ease; /* Додаємо плавні переходи для opacity та transform */
+            transform: translateY(-20px); /* Зсуваемо меню вище, для ефекту випливання */
+        }
+
+        /* Media query для малих екранів */
+        @media screen and (max-width: 600px) {
+            .mobile-menu {
+                display: block; /* Показуємо випадаюче меню на малих екранах */
+            }
+
+            nav {
+                display: none; /* Ховаємо основне меню на малих екранах */
+            }
+
+            .mobile-nav {
+                display: block;
+                opacity: 1; /* Змінюємо прозорість на повну при виведенні меню */
+                transform: translateY(0); /* Змінюємо transform на 0 при виведенні меню */
+            }
+
+            .mobile-nav ul {
+                list-style: none;
+                padding: 0;
+                background-color: #333;
+                text-align: center;
+            }
+
+            .mobile-nav li {
+                margin-bottom: 10px;
+            }
+
+            .mobile-nav a {
+                text-decoration: none;
+                color: #fff;
+                padding: 10px;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MOS меблі</h1>
+        <p>Ми надаємо найкращі послуги у своєму сегменті</p>
+    </header>
+
+    <!-- Нове випадаюче меню для малих екранів -->
+    <div class="mobile-menu">
+        <span class="menu-icon" onclick="toggleMobileMenu()">&#9776;</span>
+        <nav class="mobile-nav">
+            <ul>
+                <li><a href="#">Головна</a></li>
+                <li><a href="#">Про нас</a></li>
+                <li><a href="#">Послуги</a></li>
+                <li><a href="#">Контакти</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="#">Головна</a></li>
+            <li><a href="#">Про нас</a></li>
+            <li><a href="#">Послуги</a></li>
+            <li><a href="#">Контакти</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section>
+            <h2>Про нас</h2>
+            <p>Ми - високотехнологічна компанія, що надає передові рішення у сфері меблів</p>
+        </section>
+
+        <section>
+            <h2>Наші Послуги</h2>
+            <ul>
+                <li>Продаж м'ягкої меблі</li>
+                <li>Продаж корпусної меблі</li>
+                <li>Інше</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 MOS Меблі. Усі права захищені.</p>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            var mobileNav = document.querySelector('.mobile-nav');
+            mobileNav.style.display = (mobileNav.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

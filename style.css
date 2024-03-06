@@ -1,0 +1,90 @@
+/* Загальні стилі */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Заголовок та підзаголовок у хедері */
+header {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Навігаційне меню */
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    background-color: #333;
+}
+
+nav a {
+    text-decoration: none;
+    color: #fff;
+    padding: 10px;
+}
+
+/* Основний контент */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Секції в основному контенті */
+section {
+    margin-bottom: 20px;
+}
+
+/* Футер */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+}
+
+/* Media query для різних ширин екрану */
+@media screen and (max-width: 992px) {
+    .column {
+        width: 50%;
+    }
+
+    /* Зміна напрямку flex контейнера для мобільних екранів */
+    main {
+        flex-direction: column;
+    }
+}
+
+/* Мобільне меню */
+@media screen and (max-width: 600px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav li {
+        margin-bottom: 10px;
+    }
+}
+
+/* ваші існуючі стилі тут */
+
+/* Стилі для випадаючого меню на малих екранах */
+.mobile-menu {
+    display: none; /* Спочатку ховаємо випадаюче меню */
+}
+
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.mobile-nav {
+    display: none;
+}
+
