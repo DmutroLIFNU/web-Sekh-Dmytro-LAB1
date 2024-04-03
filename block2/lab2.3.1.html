@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lab2.3.1</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 50 200 200" style="width: 300px; height: 430px;">
+        <!-- Напис -->
+        <text x="50%" y="20%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="24" fill="black">2003</text>
+        <!-- Зовнішній контур щита -->
+        <path d="M20 60 Q100 60 180 60 L180 180 Q100 360 20 180 Z" fill="white" stroke="black" stroke-width="2" />
+        <!-- Лінія, яка ділить щит по вертикалі навпіл -->
+        <line x1="100" y1="60" x2="100" y2="270" stroke="black" stroke-width="2" />
+    </svg>
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <div id="score"></div>
+    <div id="topScores"></div>
+    <div id="bottomScores"></div>
+    <button id="restartButton">Restart</button>
+    <button id="resetScoresButton">Reset Scores</button>
+    <script>
+        // Отримання контексту малювання
+        var canvas = document.getElementById("gameCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Розміри мяча та позиція
+        var ballRadius = 10;
+        var x = canvas.width / 2;
+        var y = canvas.height - 30;
+        // Випадкова початкова швидкість по горизонталі
+        var dx = getRandomInt(-2, 2);
+        // Швидкість по вертикалі
+        var dy = -2;
+
+        // Розміри ракетки та позиція
+        var paddleHeight = 10;
+        var paddleWidth = 75;
+        var paddleX = (canvas.width - paddleWidth) / 2;
+
+        // Клавіші керування
+        var rightPressed = false;
+        var leftPressed = false;
+
+        // Бали гравця
+        var score = 0;
+
+        // Обробник клавіш
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+
+        function keyDownHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = true;
+            } else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = false;
+            } else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+
+        // Функція малювання мяча
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Функція малювання ракетки
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Функція оновлення гри
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+            drawPaddle();
+            drawScore();
+
+            // Перевірка зіткнення мяча з межами поля
+            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            if (y + dy < ballRadius) {
+                dy = -dy;
+            } else if (y + dy > canvas.height - ballRadius) {
+                // Перевірка зіткнення мяча з ракеткою
+                if (x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                    score++;
+                } else {
+                    // Гра закінчена
+                    gameOver();
+                    return;
+                }
+            }
+
+            // Зміна позиції мяча
+            x += dx;
+            y += dy;
+
+            // Керування ракеткою
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += 7;
+            } else if (leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        // Вивід балів на екран
+        function drawScore() {
+            document.getElementById("score").innerHTML = "Score: " + score;
+        }
+
+        // Генерування випадкового цілого числа в заданому діапазоні включно
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Вивід результатів гри
+        function gameOver() {
+            alert("GAME OVER. Your score: " + score);
+
+            // Збереження результатів в sessionStorage
+            var history = JSON.parse(sessionStorage.getItem("gameHistory")) || [];
+            history.push(score);
+            history.sort(function(a, b) { return b - a; });
+            sessionStorage.setItem("gameHistory", JSON.stringify(history));
+
+            // Виведення три найкращих та три найгірших результатів
+            var topScores = history.slice(0, 3);
+            var bottomScores = history.slice(-3).reverse();
+
+            document.getElementById("topScores").innerHTML = "<h3>Top 3 Scores:</h3>" + topScores.join(", ");
+            document.getElementById("bottomScores").innerHTML = "<h3>Bottom 3 Scores:</h3>" + bottomScores.join(", ");
+        }
+
+        // Перезапуск гри
+        document.getElementById("restartButton").addEventListener("click", function() {
+            document.location.reload();
+        });
+
+        // Скидання результатів
+        document.getElementById("resetScoresButton").addEventListener("click", function() {
+            sessionStorage.removeItem("gameHistory");
+            document.getElementById("topScores").innerHTML = "";
+            document.getElementById("bottomScores").innerHTML = "";
+        });
+
+        // Запуск гри
+        draw();
+    </script>
+</body>
+</html>

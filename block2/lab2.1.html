@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Опитування</title>
+</head>
+<body>
+    <form id="surveyForm">
+        <label for="faculty">На якому факультеті ви навчаєтесь:</label>
+        <select id="faculty" name="faculty">
+            <option value="engineering">Інженерний</option>
+            <option value="business">Бізнес</option>
+            <option value="arts">Мистецтва</option>
+        </select><br><br>
+
+        <label>Виберіть потік на якому ви навчаєтесь:</label><br>
+        <input type="radio" id="stream1" name="stream" value="stream1">
+        <label for="stream1">Потік 1</label><br>
+        <input type="radio" id="stream2" name="stream" value="stream2">
+        <label for="stream2">Потік 2</label><br><br>
+
+        <label>Вкажіть групу:</label><br>
+        <input type="checkbox" id="groupA" name="group" value="groupA">
+        <label for="groupA">Група A</label><br>
+        <input type="checkbox" id="groupB" name="group" value="groupB">
+        <label for="groupB">Група B</label><br><br>
+
+        <label for="interviewTime">Виберіть зручний час для проходження співбесіди:</label><br>
+        <input type="datetime-local" id="interviewTime" name="interviewTime"><br><br>
+
+        <label for="averageScore">Вкажіть середній бал:</label><br>
+        <input type="number" id="averageScore" name="averageScore" min="1" max="5"><br><br>
+
+        <label for="favoriteColor">Який ваш улюблений колір?</label><br>
+        <input type="text" id="favoriteColor" name="favoriteColor"><br><br>
+
+        <label>Оберіть ваше становище:</label><br>
+        <select id="position" name="position">
+            <option value="student">Студент</option>
+            <option value="teacher">Викладач</option>
+            <option value="staff">Персонал</option>
+        </select><br><br>
+
+        <label>Чи берете ви участь у позанавчальних заходах?</label><br>
+        <select id="activities" name="activities">
+            <option value="yes">Так</option>
+            <option value="no">Ні</option>
+        </select><br><br>
+
+        <label for="comments">Чи є у вас які-небудь коментарі?</label><br>
+        <textarea id="comments" name="comments" rows="4" cols="50"></textarea><br><br>
+
+        <label>Оберіть ваш улюблений предмет:</label><br>
+        <input list="subjects" id="favoriteSubject" name="favoriteSubject">
+        <datalist id="subjects">
+            <option value="Математика">
+            <option value="Фізика">
+            <option value="Історія">
+            <option value="Література">
+        </datalist><br><br>
+
+        <button type="submit">Зберегти</button>
+    </form>
+
+    <button id="showResultsBtn">Показати результати</button>
+    <div id="methodFilterDiv" style="display: none;">
+        <label for="filterMethodSelect">Виберіть метод фільтрації:</label>
+        <select id="filterMethodSelect">
+            <option value="faculty">За факультетом</option>
+            <option value="interviewTime">За часом співбесіди</option>
+            <option value="averageScore">За середнім балом</option>
+        </select>
+    </div>
+
+    <div id="facultyFilterDiv" style="display: none;">
+        <label for="facultyFilterSelect">Виберіть факультет:</label>
+        <select id="facultyFilterSelect">
+            <option value="">Усі факультети</option>
+            <option value="engineering">Інженерний</option>
+            <option value="business">Бізнес</option>
+            <option value="arts">Мистецтва</option>
+        </select>
+    </div>
+
+    <div id="resultsContainer" style="display:none;">
+        <!-- Місце для відображення результатів -->
+    </div>
+
+    <script>
+        const form = document.getElementById('surveyForm');
+        const showResultsBtn = document.getElementById('showResultsBtn');
+        const methodFilterDiv = document.getElementById('methodFilterDiv');
+        const filterMethodSelect = document.getElementById('filterMethodSelect');
+        const facultyFilterDiv = document.getElementById('facultyFilterDiv');
+        const facultyFilterSelect = document.getElementById('facultyFilterSelect');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const surveyData = {};
+            for (const [key, value] of formData.entries()) {
+                surveyData[key] = value;
+            }
+
+            let keyNumber = localStorage.getItem('keyNumber');
+            keyNumber = keyNumber ? parseInt(keyNumber) + 1 : 1;
+
+            localStorage.setItem(`surveyData${keyNumber}`, JSON.stringify(surveyData));
+            
+            localStorage.setItem('keyNumber', keyNumber);
+
+            alert('Опитування успішно збережено!');
+        });
+
+        showResultsBtn.addEventListener('click', function() {
+            methodFilterDiv.style.display = 'block';
+            showResultsBtn.style.display = 'none';
+        });
+
+        filterMethodSelect.addEventListener('change', function() {
+            const selectedMethod = filterMethodSelect.value;
+            if (selectedMethod === 'faculty') {
+                facultyFilterDiv.style.display = 'block';
+            } else {
+                facultyFilterDiv.style.display = 'none';
+            }
+        });
+
+        facultyFilterSelect.addEventListener('change', function() {
+            const selectedMethod = filterMethodSelect.value;
+            const selectedFaculty = facultyFilterSelect.value;
+            let filteredData;
+            if (selectedMethod === 'interviewTime') {
+                const interviewTime = document.getElementById('interviewTime').value;
+                filteredData = filterByInterviewTime(interviewTime);
+            } else if (selectedMethod === 'averageScore') {
+                filteredData = filterByAverageScore();
+            } else if (selectedMethod === 'faculty') {
+                filteredData = filterByFaculty(selectedFaculty);
+            }
+            displayResults(filteredData);
+        });
+
+        function displayResults(data) {
+            let html = '<h2>Результати опитування:</h2>';
+            if (data.length === 0) {
+                html += '<p>Немає даних для відображення.</p>';
+            } else {
+                html += '<ul>';
+                data.forEach(function(item) {
+                    html += `<li>Факультет: ${item.faculty}, Потік: ${item.stream}, Група: ${item.group}, Час співбесіди: ${item.interviewTime}, Середній бал: ${item.averageScore}, Улюблений колір: ${item.favoriteColor}, Становище: ${item.position}, Приймає участь у заходах: ${item.activities}, Коментарі: ${item.comments}, Улюблений предмет: ${item.favoriteSubject}</li>`;
+                });
+                html += '</ul>';
+            }
+            resultsContainer.innerHTML = html;
+            resultsContainer.style.display = 'block';
+        }
+
+        function getSurveyDataByKey(key) {
+            return JSON.parse(localStorage.getItem(`surveyData${key}`));
+        }
+
+        function filterByFaculty(faculty) {
+            const keyNumber = localStorage.getItem('keyNumber');
+            const filteredData = [];
+            for (let i = 1; i <= keyNumber; i++) {
+                const surveyData = getSurveyDataByKey(i);
+                if (!faculty || surveyData.faculty === faculty) {
+                    filteredData.push(surveyData);
+                }
+            }
+            return filteredData;
+        }
+
+        function filterByInterviewTime(interviewTime) {
+            const keyNumber = localStorage.getItem('keyNumber');
+            const filteredData = [];
+            for (let i = 1; i <= keyNumber; i++) {
+                const surveyData = getSurveyDataByKey(i);
+                if (surveyData && surveyData.interviewTime === interviewTime) {
+                    filteredData.push(surveyData);
+                }
+            }
+            return filteredData;
+        }
+
+        function filterByAverageScore() {
+            const keyNumber = localStorage.getItem('keyNumber');
+            const surveyDataArray = [];
+            for (let i = 1; i <= keyNumber; i++) {
+                const surveyData = getSurveyDataByKey(i);
+                if (surveyData) {
+                    surveyDataArray.push(surveyData);
+                }
+            }
+            // Сортування за середнім балом (від найбільшого до найменшого)
+            surveyDataArray.sort((a, b) => b.averageScore - a.averageScore);
+            return surveyDataArray;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестування</title>
+    <style>
+        /* CSS стилі для стилізації тестової форми */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .question-container {
+            margin-bottom: 20px;
+        }
+        .question {
+            font-weight: bold;
+        }
+        .answer {
+            margin-left: 20px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="testContainer">
+        <!-- Сюди будуть додаватися питання та відповіді через JavaScript -->
+    </div>
+
+    <button id="submitBtn">Перевірити відповіді</button>
+
+    <div id="resultContainer" class="result"></div>
+
+    <script>
+        const testData = {
+            testName: "Тест по WEB дизайну",
+            questions: [
+                {
+                    question: "Вкажіть тег для блоку?",
+                    answers: [
+                        {
+                            answer: "a",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "div",
+                            isCorrect: true,
+                        },
+                        {
+                            answer: "img",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "p",
+                            isCorrect: false,
+                        }
+                    ],
+                },
+                {
+                    question: "Вкажіть тег для гіперпосилання?",
+                    answers: [
+                        {
+                            answer: "a",
+                            isCorrect: true,
+                        },
+                        {
+                            answer: "div",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "span",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "p",
+                            isCorrect: false,
+                        }
+                    ],
+                },
+                {
+                    question: "Яким мовою програмування написаний JavaScript?",
+                    answers: [
+                        {
+                            answer: "Java",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "Python",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "C++",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "JavaScript",
+                            isCorrect: true,
+                        }
+                    ],
+                },
+                {
+                    question: "Як називається метод, що викликається автоматично при створенні нового об'єкта?",
+                    answers: [
+                        {
+                            answer: "constructor",
+                            isCorrect: true,
+                        },
+                        {
+                            answer: "init",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "create",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "new",
+                            isCorrect: false,
+                        }
+                    ],
+                },
+                {
+                    question: "Як називається змінна, що доступна в будь-якому місці коду?",
+                    answers: [
+                        {
+                            answer: "local variable",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "global variable",
+                            isCorrect: true,
+                        },
+                        {
+                            answer: "private variable",
+                            isCorrect: false,
+                        },
+                        {
+                            answer: "public variable",
+                            isCorrect: false,
+                        }
+                    ],
+                }
+            ]
+        };
+
+        const testContainer = document.getElementById('testContainer');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultContainer = document.getElementById('resultContainer');
+
+        // Функція для відображення тестового питання та відповідей
+        function renderQuestion(questionData, index) {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question-container');
+            questionDiv.innerHTML = `<div class="question">${index + 1}. ${questionData.question}</div>`;
+            questionData.answers.forEach((answer, i) => {
+                const answerInput = document.createElement('input');
+                answerInput.type = 'radio';
+                answerInput.name = `question${index}`;
+                answerInput.value = i; // Встановлення значення як індекс в масиві
+
+                const answerLabel = document.createElement('label');
+                answerLabel.classList.add('answer');
+                answerLabel.textContent = `${answer.answer}`;
+
+                questionDiv.appendChild(answerInput);
+                questionDiv.appendChild(answerLabel);
+                questionDiv.appendChild(document.createElement('br'));
+            });
+            testContainer.appendChild(questionDiv);
+        }
+
+        // Відображення всіх питань
+        testData.questions.forEach((question, index) => {
+            renderQuestion(question, index);
+        });
+
+        // Функція для перевірки відповідей
+        submitBtn.addEventListener('click', function() {
+            let correctAnswersCount = 0;
+            testData.questions.forEach((question, index) => {
+                const selectedAnswerIndex = document.querySelector(`input[name="question${index}"]:checked`).value; // Отримати індекс вибраної відповіді
+                const selectedAnswer = question.answers[selectedAnswerIndex];
+                const isCorrect = selectedAnswer.isCorrect;
+
+                // Змінити колір питання відповідно до правильності відповіді
+                const questionContainer = document.querySelectorAll('.question-container')[index];
+                questionContainer.style.color = isCorrect ? 'green' : 'red';
+
+                if (isCorrect) {
+                    correctAnswersCount++;
+                }
+            });
+            const resultPercentage = (correctAnswersCount / testData.questions.length) * 100;
+            resultContainer.textContent = `Ваш результат: ${correctAnswersCount} з ${testData.questions.length} (${resultPercentage}%)`;
+        });
+    </script>
+</body>
+</html>
